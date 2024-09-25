@@ -1,38 +1,71 @@
 /* src/AdminPage.css */
 .admin-page {
     display: flex;
-    height: 100vh; /* 전체 화면 높이 */
+    height: 100vh;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
   }
   
   .sidebar {
-    width: 200px;
-    background-color: #f4f4f4;
-    border-right: 1px solid #ccc;
-    transition: width 0.3s; /* 애니메이션 효과 */
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    transition: width 0.3s;
+    padding: 20px;
   }
   
   .sidebar.closed {
-    width: 50px; /* 메뉴가 닫혔을 때의 너비 */
+    width: 60px;
   }
   
   .menu-header {
     cursor: pointer;
-    font-weight: bold;
-    padding: 10px;
     text-align: center;
+    font-size: 18px;
+    margin-bottom: 20px;
   }
   
   .menu-list {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
   }
   
   .menu-list li {
-    padding: 8px 10px;
+    margin: 15px 0;
+  }
+  
+  .menu-list li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .menu-list li a:hover {
+    background-color: #34495e;
   }
   
   .content {
+    flex: 1;
     padding: 20px;
-    flex-grow: 1; /* 콘텐츠가 남은 공간을 차지하도록 설정 */
+    background-color: white;
+    overflow-y: auto;
+    transition: background-color 0.3s;
+  }
+  
+  .content h1 {
+    color: #2c3e50;
+  }
+  
+  .content h2 {
+    color: #34495e;
+  }
+  
+  .content p {
+    line-height: 1.6;
+    color: #555;
   }
   
