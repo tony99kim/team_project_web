@@ -1,15 +1,31 @@
-// src/AdminLogin.js
 import React, { useState } from 'react';
+import { auth } from './firebase'; // Firebase 초기화 파일 import
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom'; // 리다이렉트를 위한 useNavigate import
+
+const allowedEmails = ['admin@gmail.com']; // 허용된 이메일 목록
 
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault(); // 기본 폼 제출 방지
-    // 로그인 처리 로직 추가
-    console.log('아이디:', username);
-    console.log('비밀번호:', password);
+    if (!allowedEmails.includes(username)) {
+      alert('이 이메일로는 로그인할 수 없습니다.');
+      return;
+    }
+    
+    try {
+      // Firebase Authentication을 사용하여 로그인
+      await signInWithEmailAndPassword(auth, username, password);
+      // 로그인 성공 시 관리자 페이지로 리다이렉트
+      navigate('/admin'); // '/admin'은 관리자 페이지의 경로
+    } catch (error) {
+      console.error('로그인 실패:', error.message);
+      alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.');
+    }
   };
 
   return (

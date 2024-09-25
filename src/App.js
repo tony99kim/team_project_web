@@ -1,14 +1,18 @@
 // src/App.js
 import React from 'react';
-import './App.css';
-import AdminLogin from './AdminLogin'; // AdminLogin 컴포넌트 임포트
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import AdminLogin from './AdminLogin';
+import AdminPage from './AdminPage'; // 관리자 페이지 컴포넌트 import
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <AdminLogin /> {/* AdminLogin 컴포넌트 사용 */}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminPage />} /> {/* 관리자 페이지 경로 */}
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
