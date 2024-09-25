@@ -1,0 +1,38 @@
+/* src/AdminPage.css */
+.admin-page {
+    display: flex;
+    height: 100vh; /* 전체 화면 높이 */
+  }
+  
+  .sidebar {
+    width: 200px;
+    background-color: #f4f4f4;
+    border-right: 1px solid #ccc;
+    transition: width 0.3s; /* 애니메이션 효과 */
+  }
+  
+  .sidebar.closed {
+    width: 50px; /* 메뉴가 닫혔을 때의 너비 */
+  }
+  
+  .menu-header {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .menu-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .menu-list li {
+    padding: 8px 10px;
+  }
+  
+  .content {
+    padding: 20px;
+    flex-grow: 1; /* 콘텐츠가 남은 공간을 차지하도록 설정 */
+  }
+  

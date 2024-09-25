@@ -9,7 +9,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminPage />} /> {/* 관리자 페이지 경로 */}
+        <Route path="/admin/*" element={<AdminPage />} /> {/* 관리자 페이지 경로 */}
       </Routes>
     </Router>
   );
