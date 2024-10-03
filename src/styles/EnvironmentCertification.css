@@ -1,0 +1,110 @@
+/* src/styles/EnvironmentCertification.css */
+
+.certification-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.certification-table th, .certification-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.certification-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.certification-item {
+    cursor: pointer;
+}
+
+.certification-item:hover {
+    background-color: #f1f1f1;
+}
+
+.divider {
+    height: 2px;
+    background-color: black;
+    margin: 20px 0;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination a {
+    text-decoration: none;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    color: #007bff;
+    border-radius: 4px;
+}
+
+.pagination a:hover {
+    background-color: #f1f1f1;
+}
+
+.active a {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+}
+
+/* 필터 및 검색 스타일 추가 */
+.filter-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.filter-container select {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 150px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* 오른쪽으로 붙이기 위해 추가 */
+}
+
+.search-container input {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 250px;
+    margin-right: 5px; /* 버튼과의 간격 */
+}
+
+.search-container button {
+    padding: 8px 12px;
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-container button:hover {
+    background-color: #0056b3; /* 버튼 호버 색상 */
+}

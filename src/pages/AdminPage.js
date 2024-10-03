@@ -1,11 +1,13 @@
 // src/AdminPage.js
 import React, { useState } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import './AdminPage.css';
+import { Routes, Route } from 'react-router-dom';
+import '../styles/AdminPage.css';
 import EnvironmentCertification from './EnvironmentCertification';
 import Notice from './Notice';
 import CustomerService from './CustomerService';
 import Member from './Member';
+import CertificationDetail from './CertificationDetail'; // CertificationDetail 컴포넌트 import
+import Menu from '../components/SidebarMenu'; // Menu 컴포넌트 import
 
 const AdminPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
@@ -16,25 +18,14 @@ const AdminPage = () => {
 
   return (
     <div className="admin-page">
-      <div className={`sidebar ${isMenuOpen ? 'open' : 'closed'}`}>
-        <div className="menu-header" onClick={toggleMenu}>
-          <span>{isMenuOpen ? '◀' : '▶'} 메뉴</span>
-        </div>
-        {isMenuOpen && (
-          <ul className="menu-list">
-            <li><Link to="/admin/environment-certification">환경 인증</Link></li>
-            <li><Link to="/admin/notice">공지사항</Link></li>
-            <li><Link to="/admin/customer-service">고객센터</Link></li>
-            <li><Link to="/admin/member">회원</Link></li>
-          </ul>
-        )}
-      </div>
+      <Menu isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} /> {/* Menu 컴포넌트 사용 */}
       <div className="content">
         <Routes>
           <Route path="environment-certification" element={<EnvironmentCertification />} />
           <Route path="notice" element={<Notice />} />
           <Route path="customer-service" element={<CustomerService />} />
           <Route path="member" element={<Member />} />
+          <Route path="certification/:id" element={<CertificationDetail />} /> {/* 추가된 라우트 */}
           <Route path="/" element={<h1>관리자 페이지</h1>} />
         </Routes>
       </div>

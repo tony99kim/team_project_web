@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { auth } from './firebase'; // Firebase 초기화 파일 import
+import { auth } from '../utils/firebase'; // Firebase 초기화 파일 import
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom'; // 리다이렉트를 위한 useNavigate import
 

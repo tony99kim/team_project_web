@@ -1,0 +1,28 @@
+/* src/AdminPage.css */
+.admin-page {
+  display: flex;
+  height: 100vh;
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  background-color: white;
+  overflow-y: auto;
+  transition: background-color 0.3s;
+}
+
+.content h1 {
+  color: #2c3e50;
+}
+
+.content h2 {
+  color: #34495e;
+}
+
+.content p {
+  line-height: 1.6;
+  color: #555;
+}
