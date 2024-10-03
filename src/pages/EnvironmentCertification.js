@@ -23,7 +23,9 @@ const EnvironmentCertification = () => {
             const certs = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
-                timestamp: doc.data().timestamp || '등록일시 없음' // timestamp가 없을 경우 기본값 설정
+                timestamp: doc.data().timestamp 
+                    ? new Date(doc.data().timestamp).toLocaleDateString('ko-KR', { year: 'numeric', month: 'numeric', day: 'numeric' }).replace(/\.$/, '') // 마지막 점 제거
+                    : '등록일시 없음' // timestamp가 없을 경우 기본값 설정
             }));
             setCertifications(certs);
             setFilteredCertifications(certs); // 초기 로드 시 필터링된 인증 목록 설정

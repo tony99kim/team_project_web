@@ -2,13 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
 import '../styles/CertificationDetail.css'; // CSS 파일 import
 
 const CertificationDetail = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [certification, setCertification] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [imageUrls, setImageUrls] = useState([]);
 
     useEffect(() => {
         const fetchCertificationDetail = async () => {
@@ -16,7 +19,10 @@ const CertificationDetail = () => {
                 const certRef = doc(db, 'pointAuthentications', id);
                 const certSnap = await getDoc(certRef);
                 if (certSnap.exists()) {
-                    setCertification({ id: certSnap.id, ...certSnap.data() });
+                    const data = certSnap.data();
+                    const createdAt = data.timestamp || '등록일시 없음';
+                    setCertification({ id: certSnap.id, ...data, createdAt });
+                    await fetchImages(data.authenticationId); // 이미지 가져오기
                 } else {
                     console.log('No such document!');
                 }
@@ -24,6 +30,18 @@ const CertificationDetail = () => {
                 console.error('Error fetching certification detail:', error);
             } finally {
                 setLoading(false);
+            }
+        };
+
+        const fetchImages = async (authenticationId) => {
+            const storage = getStorage();
+            const imagesRef = ref(storage, `PointAuthenticationImages/${authenticationId}/`);
+            try {
+                const res = await listAll(imagesRef);
+                const urls = await Promise.all(res.items.map(item => getDownloadURL(item)));
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
             }
         };
 
@@ -40,6 +58,10 @@ const CertificationDetail = () => {
         }
     };
 
+    const handleBackToList = () => {
+        navigate(-1); // 이전 페이지로 돌아가기
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -51,16 +73,31 @@ const CertificationDetail = () => {
     return (
         <div className="certification-detail">
             <h1>{certification.title}</h1>
-            <p>{certification.description}</p>
-            <p>상태: {certification.status}</p>
-            <img 
-                src={`https://firebasestorage.googleapis.com/v0/b/team-project-12345.appspot.com/o/PointAuthenticationImages%2F${certification.authenticationId}.jpg?alt=media`} 
-                alt={certification.title} 
-                className="certification-image" 
-            />
+            <div className="certification-info">
+                <p>등록일: {certification.createdAt}</p>
+                <p>상태: {certification.status}</p>
+            </div>
+            <hr />
+            <div className="image-gallery">
+                {imageUrls.length > 0 ? (
+                    imageUrls.map((url, index) => (
+                        <img 
+                            key={index}
+                            src={url} 
+                            alt={`${certification.title} 이미지 ${index + 1}`} 
+                            className="certification-image" 
+                        />
+                    ))
+                ) : (
+                    <p>이미지가 없습니다.</p>
+                )}
+            </div>
+            <p className="certification-description">{certification.description}</p>
+            <hr />
             {certification.status === '대기' && (
                 <button className="approve-button" onClick={handleApproval}>승인</button>
             )}
+            <button className="back-button" onClick={handleBackToList}>목록으로 돌아가기</button>
         </div>
     );
 };
