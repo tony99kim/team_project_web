@@ -1,4 +1,4 @@
-// src/firebase.js
+// src/utils/ firebase.js
 import { initializeApp } from "firebase/app";
 //import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth"; // getAuth를 import 추가

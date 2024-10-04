@@ -1,7 +1,7 @@
-// src/components/Sidebar.js
+// src/components/SidebarMenu.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/SidebarMenu.css';
+import '../styles/SidebarMenu.css'; // 스타일 파일 경로 확인
 
 const Sidebar = ({ isMenuOpen, toggleMenu }) => {
   return (
