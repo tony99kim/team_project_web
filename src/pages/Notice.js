@@ -44,9 +44,16 @@ const Notice = () => {
       </button>
       <ul>
         {notices.map(notice => (
-          <li key={notice.id}>
+          <li key={notice.id} style={{ marginBottom: '20px' }}>
             <h2>{notice.title}</h2>
             <p>{notice.content}</p>
+            {notice.imageUrl && ( // 이미지가 있을 경우에만 표시
+              <img
+                src={notice.imageUrl}
+                alt={notice.title}
+                style={{ maxWidth: '100%', height: 'auto' }} // 이미지 스타일 설정
+              />
+            )}
           </li>
         ))}
       </ul>

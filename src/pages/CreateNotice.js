@@ -2,21 +2,33 @@
 import React, { useState } from 'react';
 import { db } from '../utils/firebase'; // firebase.js 경로 확인
 import { collection, addDoc } from 'firebase/firestore'; // Firestore에 문서 추가
+import { storage } from '../utils/firebase'; // Firebase Storage import
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // 파일 업로드 관련 함수
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/SidebarMenu'; // 사이드 툴바 컴포넌트 import
 
 const CreateNotice = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [image, setImage] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 사이드바 열림/닫힘 상태
   const navigate = useNavigate(); // navigate 훅 사용
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let imageUrl = '';
+
+    if (image) {
+      const imageRef = ref(storage, `notices/${image.name}`);
+      await uploadBytes(imageRef, image);
+      imageUrl = await getDownloadURL(imageRef);
+    }
+
     try {
       await addDoc(collection(db, 'notices'), {
         title,
         content,
+        imageUrl,
         createdAt: new Date(), // 생성일 추가
       });
       navigate('/notices'); // 작성 후 공지사항 목록으로 이동
@@ -55,6 +67,15 @@ const CreateNotice = () => {
               style={{ width: '100%', height: '100px', padding: '8px' }}
               required
             ></textarea>
+          </div>
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px' }}>이미지 업로드:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              style={{ width: '100%' }}
+            />
           </div>
           <button type="submit" style={{ padding: '10px 20px' }}>
             작성하기
