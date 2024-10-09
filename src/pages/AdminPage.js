@@ -8,6 +8,7 @@ import CustomerService from './CustomerService';
 import Member from './Member';
 import CertificationDetail from './CertificationDetail'; // CertificationDetail 컴포넌트 import
 import InquiryDetail from './InquiryDetail'; // InquiryDetail 컴포넌트 import
+import MemberDetail from './MemberDetail'; // MemberDetail 컴포넌트 import
 import Menu from '../components/SidebarMenu'; // Menu 컴포넌트 import
 
 const AdminPage = () => {
@@ -28,6 +29,7 @@ const AdminPage = () => {
           <Route path="member" element={<Member />} />
           <Route path="certification/:id" element={<CertificationDetail />} /> {/* 추가된 라우트 */}
           <Route path="customer-service/inquiry/:id" element={<InquiryDetail />} /> {/* InquiryDetail 라우트 추가 */}
+          <Route path="member/:id" element={<MemberDetail />} /> {/* MemberDetail 라우트 추가 */}
           <Route path="/" element={<h1>관리자 페이지</h1>} />
         </Routes>
       </div>
