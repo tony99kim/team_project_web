@@ -1,0 +1,12 @@
+/* src/styles/NoticeDetail.css */
+.notice-detail-container {
+    display: flex; /* 플렉스 박스 사용 */
+    height: 100vh; /* 전체 화면 높이 사용 */
+}
+
+.notice-detail {
+    margin-left: 220px; /* 사이드바 너비 만큼 여백 추가 */
+    padding: 20px;
+    flex-grow: 1; /* 남은 공간을 차지 */
+    overflow-y: auto; /* 세로 스크롤 가능 */
+}
