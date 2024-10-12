@@ -149,11 +149,11 @@ const MemberDetail = () => {
                         />
                     </div>
                     <button className="save-button" onClick={handleSave}>저장</button>
+                    <button className="back-button" onClick={handleBackToList}>목록으로 돌아가기</button>
                 </div>
             ) : (
                 <p>회원 정보를 불러올 수 없습니다.</p>
             )}
-            <button className="back-button" onClick={handleBackToList}>목록으로 돌아가기</button>
         </div>
     );
 };

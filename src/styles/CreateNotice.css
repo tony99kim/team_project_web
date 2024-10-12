@@ -1,11 +1,18 @@
-/* src/styles/MemberDetail.css */
+/* src/styles/CreateNotice.css */
 
-.member-detail-content {
+.create-notice-container {
     padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.create-notice-container h1 {
+    margin-bottom: 20px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .form-group label {
@@ -13,14 +20,15 @@
     margin-bottom: 5px;
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group textarea {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
 
-.save-button,
+.submit-button,
 .back-button {
     padding: 10px 15px; /* 동일한 패딩 설정 */
     color: white;
@@ -31,11 +39,11 @@
     margin-right: 10px; /* 버튼 간격 추가 */
 }
 
-.save-button {
-    background-color: #007BFF;
+.submit-button {
+    background-color: #007bff;
 }
 
-.save-button:hover {
+.submit-button:hover {
     background-color: #0056b3;
 }
 
