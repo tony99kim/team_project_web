@@ -18,18 +18,44 @@
     flex-wrap: wrap; /* 여러 이미지를 감싸기 위해 flex-wrap 사용 */
 }
 
-.approve-button {
-    margin-top: 20px;
-    padding: 10px 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
+.button-group {
+    display: flex;
+    gap: 10px; /* 버튼 사이의 간격 */
+}
+
+.button-group button {
+    height: 40px; /* 버튼 높이를 통일 */
+    padding: 10px 15px; /* 패딩 조정 */
     border-radius: 4px;
     cursor: pointer;
+    border: none; /* 버튼 테두리 제거 */
+}
+
+.approve-button {
+    background-color: #4CAF50; /* 승인 버튼 색상 */
+    color: white;
 }
 
 .approve-button:hover {
-    background-color: #45a049;
+    background-color: #45a049; /* 승인 버튼 호버 색상 */
+}
+
+.pending-button {
+    background-color: #FFC107; /* 대기 버튼 색상 */
+    color: white;
+}
+
+.pending-button:hover {
+    background-color: #e0a800; /* 대기 버튼 호버 색상 */
+}
+
+.reject-button {
+    background-color: #f44336; /* 승인 거부 버튼 색상 */
+    color: white;
+}
+
+.reject-button:hover {
+    background-color: #d32f2f; /* 승인 거부 버튼 호버 색상 */
 }
 
 .back-button {
@@ -43,7 +69,7 @@
 }
 
 .back-button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* 뒤로 가기 버튼 호버 색상 */
 }
 
 .certification-info {

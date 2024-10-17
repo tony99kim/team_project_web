@@ -1,4 +1,3 @@
-// src/CertificationDetail.js
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -58,6 +57,26 @@ const CertificationDetail = () => {
         }
     };
 
+    const handlePending = async () => {
+        const certRef = doc(db, 'pointAuthentications', id);
+        try {
+            await updateDoc(certRef, { status: '대기' });
+            setCertification(prev => ({ ...prev, status: '대기' }));
+        } catch (error) {
+            console.error('Error updating certification status to pending:', error);
+        }
+    };
+
+    const handleRejection = async () => {
+        const certRef = doc(db, 'pointAuthentications', id);
+        try {
+            await updateDoc(certRef, { status: '승인 거부' });
+            setCertification(prev => ({ ...prev, status: '승인 거부' }));
+        } catch (error) {
+            console.error('Error updating certification status to rejected:', error);
+        }
+    };
+
     const handleBackToList = () => {
         navigate(-1); // 이전 페이지로 돌아가기
     };
@@ -94,9 +113,27 @@ const CertificationDetail = () => {
             </div>
             <p className="certification-description">{certification.description}</p>
             <hr />
-            {certification.status === '대기' && (
-                <button className="approve-button" onClick={handleApproval}>승인</button>
-            )}
+            <div className="button-group">
+                {certification.status === '대기' && (
+                    <>
+                        <button className="approve-button" onClick={handleApproval}>승인</button>
+                        <button className="pending-button" onClick={handlePending}>대기</button>
+                        <button className="reject-button" onClick={handleRejection}>승인 거부</button>
+                    </>
+                )}
+                {certification.status === '승인' && (
+                    <>
+                        <button className="pending-button" onClick={handlePending}>대기</button>
+                        <button className="reject-button" onClick={handleRejection}>승인 거부</button>
+                    </>
+                )}
+                {certification.status === '승인 거부' && (
+                    <>
+                        <button className="approve-button" onClick={handleApproval}>승인</button>
+                        <button className="pending-button" onClick={handlePending}>대기</button>
+                    </>
+                )}
+            </div>
             <button className="back-button" onClick={handleBackToList}>목록으로 돌아가기</button>
         </div>
     );
