@@ -88,12 +88,14 @@ const EnvironmentCertification = () => {
         setAutoApproval(!autoApproval); // 자동 승인 상태 토글
         if (!autoApproval) {
             // 자동 승인 상태일 때, API 호출
-            const certificationsToSend = filteredCertifications.map(cert => ({
-                id: cert.id,
-                title: cert.title,
-                description: cert.description,
-                images: cert.images // 이미지 URL 배열 추가
-            }));
+            const certificationsToSend = filteredCertifications
+                .filter(cert => cert.status === '대기') // 대기 상태인 인증글만 필터링
+                .map(cert => ({
+                    id: cert.id,
+                    title: cert.title,
+                    description: cert.description,
+                    images: cert.images // 이미지 URL 배열 추가
+                }));
             
             console.log('Sending certifications:', certificationsToSend); // API 호출 전에 certifications 로그 출력
             

@@ -52,8 +52,17 @@ const CertificationDetail = () => {
         try {
             await updateDoc(certRef, { status: '승인' });
             setCertification(prev => ({ ...prev, status: '승인' }));
+
+            // 포인트 업데이트 로직 추가
+            const userRef = doc(db, 'users', certification.userId);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                const newPoints = (userData.environmentPoint || 0) + 100;
+                await updateDoc(userRef, { environmentPoint: newPoints });
+            }
         } catch (error) {
-            console.error('Error updating certification status:', error);
+            console.error('Error updating certification status or user points:', error);
         }
     };
 
