@@ -1,4 +1,4 @@
-// src/AdminPage.js
+// src/pages/AdminPage.js
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import '../styles/AdminPage.css';
@@ -11,6 +11,7 @@ import InquiryDetail from './InquiryDetail'; // InquiryDetail 컴포넌트 impor
 import MemberDetail from './MemberDetail'; // MemberDetail 컴포넌트 import
 import NoticeDetail from './NoticeDetail'; // NoticeDetail 컴포넌트 import
 import CreateNotice from './CreateNotice'; // CreateNotice 컴포넌트 import
+import Event from './Event'; // Event 컴포넌트 import
 import Menu from '../components/SidebarMenu'; // SidebarMenu 컴포넌트 import
 
 const AdminPage = () => {
@@ -34,6 +35,7 @@ const AdminPage = () => {
           <Route path="member/:id" element={<MemberDetail />} /> {/* MemberDetail 라우트 추가 */}
           <Route path="notice/:id" element={<NoticeDetail />} /> {/* NoticeDetail 라우트 수정 */}
           <Route path="notice/create" element={<CreateNotice />} /> {/* CreateNotice 라우트 추가 */}
+          <Route path="event" element={<Event />} /> {/* Event 라우트 추가 */}
           <Route path="/" element={<h1>관리자 페이지</h1>} />
         </Routes>
       </div>

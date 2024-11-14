@@ -14,6 +14,7 @@ const Sidebar = ({ isMenuOpen, toggleMenu }) => {
           <li><Link to="/admin/environment-certification">환경 인증</Link></li>
           <li><Link to="/admin/notice">공지사항</Link></li>
           <li><Link to="/admin/customer-service">고객센터</Link></li>
+          <li><Link to="/admin/event">이벤트</Link></li> {/* 이벤트 페이지 링크 추가 */}
           <li><Link to="/admin/member">회원</Link></li>
         </ul>
       )}
