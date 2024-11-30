@@ -1,5 +1,5 @@
 // src/pages/Notice.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { db } from '../utils/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,49 +8,70 @@ import '../styles/Notice.css'; // CSS 파일 import
 
 const Notice = () => {
   const [notices, setNotices] = useState([]);
+  const [filteredNotices, setFilteredNotices] = useState([]); // 필터링된 공지 상태 추가
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const itemsPerPage = 5;
   const navigate = useNavigate();
 
+  const fetchNotices = async () => {
+    setLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, 'notices'));
+      const noticesData = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title,
+          content: data.content, // content 필드 추가
+          imageUrl: data.imageUrl, // imageUrl 필드 추가
+          createdAt: data.createdAt ? new Date(data.createdAt.seconds * 1000) : null // Date 객체로 저장
+        };
+      });
+
+      // 등록일시 기준으로 내림차순 정렬
+      noticesData.sort((a, b) => {
+        return b.createdAt - a.createdAt; // 최신 공지가 위에 오도록 정렬
+      });
+
+      setNotices(noticesData);
+      setFilteredNotices(noticesData); // 초기 로드 시 필터링된 공지 목록 설정
+    } catch (error) {
+      console.error('Error fetching notices: ', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchNotices = async () => {
-      setLoading(true);
-      try {
-        const querySnapshot = await getDocs(collection(db, 'notices'));
-        const noticesData = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title,
-            content: data.content, // content 필드 추가
-            imageUrl: data.imageUrl, // imageUrl 필드 추가
-            createdAt: data.createdAt ? new Date(data.createdAt.seconds * 1000) : null // Date 객체로 저장
-          };
-        });
-
-        // 등록일시 기준으로 내림차순 정렬
-        noticesData.sort((a, b) => {
-          return b.createdAt - a.createdAt; // 최신 공지가 위에 오도록 정렬
-        });
-
-        setNotices(noticesData);
-      } catch (error) {
-        console.error('Error fetching notices: ', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNotices();
+    fetchNotices(); // 컴포넌트가 마운트될 때 공지 목록을 가져옴
   }, []);
+
+  useEffect(() => {
+    const storedPage = sessionStorage.getItem('currentPage');
+    if (storedPage) {
+      setCurrentPage(Number(storedPage)); // 저장된 페이지 번호로 설정
+    }
+  }, []);
+
+  const updateFilteredNotices = useCallback((searchTerm) => {
+    const newFilteredNotices = notices.filter(notice =>
+      notice.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredNotices(newFilteredNotices);
+  }, [notices]);
+
+  useEffect(() => {
+    updateFilteredNotices(searchTerm); // 검색어가 변경될 때 필터링 업데이트
+  }, [notices, searchTerm, updateFilteredNotices]);
 
   const handleCreateNotice = () => {
     navigate('/admin/notice/create');
   };
 
   const handleNoticeClick = (notice) => {
+    sessionStorage.setItem('currentPage', currentPage); // 현재 페이지 상태 저장
     navigate(`/admin/notice/${notice.id}`, { state: { 
       title: notice.title, 
       content: notice.content, 
@@ -62,15 +83,12 @@ const Notice = () => {
   const handlePageClick = (data) => {
     const selectedPage = data.selected;
     setCurrentPage(selectedPage);
+    sessionStorage.setItem('currentPage', selectedPage); // 페이지 변경 시 상태 저장
   };
 
   const handleSearchClick = () => {
     setCurrentPage(0); // 검색어 변경 시 페이지를 첫 페이지로 리셋
   };
-
-  const filteredNotices = notices.filter(notice =>
-    notice.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const displayedNotices = filteredNotices.slice(
     currentPage * itemsPerPage,

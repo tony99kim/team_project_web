@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../utils/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import ReactPaginate from 'react-paginate';
@@ -7,49 +7,70 @@ import '../styles/Event.css';
 
 const Event = () => {
     const [events, setEvents] = useState([]);
+    const [filteredEvents, setFilteredEvents] = useState([]); // 필터링된 이벤트 상태 추가
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const itemsPerPage = 10;
     const navigate = useNavigate();
 
+    const fetchEvents = async () => {
+        setLoading(true);
+        try {
+            const querySnapshot = await getDocs(collection(db, 'events'));
+            const eventsData = querySnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    title: data.title,
+                    content: data.content,
+                    imageUrl: data.imageUrl,
+                    createdAt: data.createdAt ? new Date(data.createdAt.seconds * 1000) : null
+                };
+            });
+
+            // 등록일시 기준으로 내림차순 정렬
+            eventsData.sort((a, b) => {
+                return b.createdAt - a.createdAt;
+            });
+
+            setEvents(eventsData);
+            setFilteredEvents(eventsData); // 초기 로드 시 필터링된 이벤트 목록 설정
+        } catch (error) {
+            console.error('Error fetching events: ', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchEvents = async () => {
-            setLoading(true);
-            try {
-                const querySnapshot = await getDocs(collection(db, 'events'));
-                const eventsData = querySnapshot.docs.map(doc => {
-                    const data = doc.data();
-                    return {
-                        id: doc.id,
-                        title: data.title,
-                        content: data.content,
-                        imageUrl: data.imageUrl,
-                        createdAt: data.createdAt ? new Date(data.createdAt.seconds * 1000) : null
-                    };
-                });
-
-                // 등록일시 기준으로 내림차순 정렬
-                eventsData.sort((a, b) => {
-                    return b.createdAt - a.createdAt;
-                });
-
-                setEvents(eventsData);
-            } catch (error) {
-                console.error('Error fetching events: ', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchEvents();
+        fetchEvents(); // 컴포넌트가 마운트될 때 이벤트 목록을 가져옴
     }, []);
+
+    useEffect(() => {
+        const storedPage = sessionStorage.getItem('currentPage');
+        if (storedPage) {
+            setCurrentPage(Number(storedPage)); // 저장된 페이지 번호로 설정
+        }
+    }, []);
+
+    const updateFilteredEvents = useCallback((searchTerm) => {
+        const newFilteredEvents = events.filter(event =>
+            event.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredEvents(newFilteredEvents);
+    }, [events]);
+
+    useEffect(() => {
+        updateFilteredEvents(searchTerm); // 검색어가 변경될 때 필터링 업데이트
+    }, [events, searchTerm, updateFilteredEvents]);
 
     const handleCreateEvent = () => {
         navigate('/admin/event/create');
     };
 
     const handleEventClick = (event) => {
+        sessionStorage.setItem('currentPage', currentPage); // 현재 페이지 상태 저장
         navigate(`/admin/event/${event.id}`, { state: { 
             title: event.title, 
             content: event.content, 
@@ -59,16 +80,14 @@ const Event = () => {
     };
 
     const handlePageClick = (data) => {
-        setCurrentPage(data.selected);
+        const selectedPage = data.selected;
+        setCurrentPage(selectedPage);
+        sessionStorage.setItem('currentPage', selectedPage); // 페이지 변경 시 상태 저장
     };
 
     const handleSearchClick = () => {
         setCurrentPage(0); // 검색어 변경 시 페이지를 첫 페이지로 리셋
     };
-
-    const filteredEvents = events.filter(event =>
-        event.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     const displayedEvents = filteredEvents.slice(
         currentPage * itemsPerPage,

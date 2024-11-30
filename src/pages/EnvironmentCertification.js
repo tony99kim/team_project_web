@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../utils/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -21,14 +21,25 @@ const EnvironmentCertification = () => {
         setLoading(true); // 데이터 로딩 시작
         try {
             const querySnapshot = await getDocs(collection(db, 'pointAuthentications'));
-            const certs = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                timestamp: doc.data().timestamp 
-                    ? new Date(doc.data().timestamp).toLocaleDateString('ko-KR', { year: 'numeric', month: 'numeric', day: 'numeric' }).replace(/\.$/, '') // 마지막 점 제거
-                    : '등록일시 없음', // timestamp가 없을 경우 기본값 설정
-                images: doc.data().images || [] // images 속성 추가, 기본값은 빈 배열
-            }));
+            const certs = querySnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    timestamp: data.timestamp 
+                        ? new Date(data.timestamp).toLocaleDateString('ko-KR', { year: 'numeric', month: 'numeric', day: 'numeric' }).replace(/\.$/, '') 
+                        : '등록일시 없음', // timestamp가 없을 경우 기본값 설정
+                    images: data.images || [] // images 속성 추가, 기본값은 빈 배열
+                };
+            });
+
+            // 등록일시 순으로 정렬 (최신순)
+            certs.sort((a, b) => {
+                const dateA = new Date(a.timestamp);
+                const dateB = new Date(b.timestamp);
+                return dateB - dateA;
+            });
+
             setCertifications(certs);
             setFilteredCertifications(certs); // 초기 로드 시 필터링된 인증 목록 설정
         } catch (error) {
@@ -40,7 +51,7 @@ const EnvironmentCertification = () => {
 
     useEffect(() => {
         fetchCertifications(); // 컴포넌트가 마운트될 때 인증 목록을 가져옴
-    }, []); // 빈 배열로 설정하여 처음 한 번만 실행
+    }, []);
 
     useEffect(() => {
         const storedPage = sessionStorage.getItem('currentPage');
@@ -48,6 +59,19 @@ const EnvironmentCertification = () => {
             setCurrentPage(Number(storedPage)); // 저장된 페이지 번호로 설정
         }
     }, []);
+
+    const updateFilteredCertifications = useCallback((filter, searchTerm) => {
+        const newFilteredCertifications = certifications.filter(cert => {
+            const matchesFilter = filter === '전체' || cert.status === filter;
+            const matchesSearch = cert.title.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesFilter && matchesSearch;
+        });
+        setFilteredCertifications(newFilteredCertifications);
+    }, [certifications]);
+
+    useEffect(() => {
+        updateFilteredCertifications(filter, searchTerm); // 필터 또는 검색어가 변경될 때 필터링 업데이트
+    }, [certifications, filter, searchTerm, updateFilteredCertifications]);
 
     const handleDetailClick = (id) => {
         sessionStorage.setItem('currentPage', currentPage); // 현재 페이지 상태 저장
@@ -63,7 +87,6 @@ const EnvironmentCertification = () => {
     const handleFilterChange = (event) => {
         setFilter(event.target.value);
         setCurrentPage(0); // 필터 변경 시 페이지를 첫 페이지로 리셋
-        updateFilteredCertifications(event.target.value, searchTerm); // 필터 변경 시 필터링 업데이트
     };
 
     const handleSearchChange = (event) => {
@@ -72,16 +95,6 @@ const EnvironmentCertification = () => {
 
     const handleSearchClick = () => {
         setCurrentPage(0); // 검색어 변경 시 페이지를 첫 페이지로 리셋
-        updateFilteredCertifications(filter, searchTerm); // 검색 버튼 클릭 시 필터링 업데이트
-    };
-
-    const updateFilteredCertifications = (filter, searchTerm) => {
-        const newFilteredCertifications = certifications.filter(cert => {
-            const matchesFilter = filter === '전체' || cert.status === filter;
-            const matchesSearch = cert.title.toLowerCase().includes(searchTerm.toLowerCase());
-            return matchesFilter && matchesSearch;
-        });
-        setFilteredCertifications(newFilteredCertifications);
     };
 
     const handleAutoApprovalToggle = async () => {

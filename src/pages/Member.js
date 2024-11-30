@@ -1,5 +1,4 @@
-// src/Member.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../utils/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,11 +7,11 @@ import '../styles/Member.css'; // CSS 파일 import
 
 const Member = () => {
     const [members, setMembers] = useState([]);
+    const [filteredMembers, setFilteredMembers] = useState([]); // 필터링된 회원 상태 추가
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const [filter, setFilter] = useState('전체'); // 필터 상태 추가
     const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태 추가
-    const [filteredMembers, setFilteredMembers] = useState([]); // 필터링된 회원 상태 추가
     const itemsPerPage = 5;
     const navigate = useNavigate();
 
@@ -20,10 +19,24 @@ const Member = () => {
         setLoading(true); // 데이터 로딩 시작
         try {
             const querySnapshot = await getDocs(collection(db, 'users'));
-            const membersList = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            const membersList = querySnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    signUpDate: data.signUpDate 
+                        ? new Date(data.signUpDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'numeric', day: 'numeric' }).replace(/\.$/, '') 
+                        : '가입일자 없음' // signUpDate가 없을 경우 기본값 설정
+                };
+            });
+
+            // 가입일자 순으로 정렬 (최신순)
+            membersList.sort((a, b) => {
+                const dateA = new Date(a.signUpDate);
+                const dateB = new Date(b.signUpDate);
+                return dateB - dateA;
+            });
+
             setMembers(membersList);
             setFilteredMembers(membersList); // 초기 로드 시 필터링된 회원 목록 설정
         } catch (error) {
@@ -44,6 +57,19 @@ const Member = () => {
         }
     }, []);
 
+    const updateFilteredMembers = useCallback((filter, searchTerm) => {
+        const newFilteredMembers = members.filter(member => {
+            const matchesFilter = filter === '전체' || member.status === filter;
+            const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesFilter && matchesSearch;
+        });
+        setFilteredMembers(newFilteredMembers);
+    }, [members]);
+
+    useEffect(() => {
+        updateFilteredMembers(filter, searchTerm); // 필터 또는 검색어가 변경될 때 필터링 업데이트
+    }, [members, filter, searchTerm, updateFilteredMembers]);
+
     const handleDetailClick = (id) => {
         sessionStorage.setItem('currentPage', currentPage); // 현재 페이지 상태 저장
         navigate(`/admin/member/${id}`);
@@ -58,7 +84,6 @@ const Member = () => {
     const handleFilterChange = (event) => {
         setFilter(event.target.value);
         setCurrentPage(0); // 필터 변경 시 페이지를 첫 페이지로 리셋
-        updateFilteredMembers(event.target.value, searchTerm); // 필터 변경 시 필터링 업데이트
     };
 
     const handleSearchChange = (event) => {
@@ -67,16 +92,6 @@ const Member = () => {
 
     const handleSearchClick = () => {
         setCurrentPage(0); // 검색어 변경 시 페이지를 첫 페이지로 리셋
-        updateFilteredMembers(filter, searchTerm); // 검색 버튼 클릭 시 필터링 업데이트
-    };
-
-    const updateFilteredMembers = (filter, searchTerm) => {
-        const newFilteredMembers = members.filter(member => {
-            const matchesFilter = filter === '전체' || member.status === filter;
-            const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
-            return matchesFilter && matchesSearch;
-        });
-        setFilteredMembers(newFilteredMembers);
     };
 
     const displayedMembers = filteredMembers.slice(
